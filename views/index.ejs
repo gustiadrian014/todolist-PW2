@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+<div class="header-bar">
+    <h2>To-Do List</h2>
+    <p><%= formattedDate %></p>
+
+    <button id="dropdownToggle">⋯</button>
+
+    <div id="dropdown" style="display: none;">
+        <form method="GET" action="/">
+            <input type="date" name="date" value="<%= date %>">
+            <button type="submit">Go</button>
+        </form>
+    </div>
+</div>
+
+    <form method="POST" action="/add">
+        <input type="hidden" name="date" value="<%= date %>">
+        <input type="text" name="title" placeholder="Tulis tugas..." required>
+        <button type="submit">Tambah</button>
+    </form>
+
+    <ul>
+        <% if (tasks.length === 0) { %>
+            <li class="kosong">Belum ada tugas.</li>
+        <% } %>
+        <% tasks.forEach(task => { %>
+            <li class="<%= task.completed ? 'selesai' : '' %>">
+                <form action="/complete/<%= task.id %>" method="POST" style="display:inline;">
+                    <input type="hidden" name="date" value="<%= date %>">
+                    <button type="submit"><%= task.completed ? '✔' : '⭘' %></button>
+                </form>
+                <span><%= task.title %></span>
+                <form action="/delete/<%= task.id %>" method="POST" style="display:inline;">
+                    <input type="hidden" name="date" value="<%= date %>">
+                    <button class="hapus" type="submit">🗑</button>
+                </form>
+            </li>
+        <% }) %>
+    </ul>
+
+    <div class="navigasi">
+        <a href="/?date=<%= new Date(new Date(date).getTime() - 86400000).toISOString().split('T')[0] %>">⬅ Hari Sebelumnya</a>
+        <a href="/?date=<%= new Date(new Date(date).getTime() + 86400000).toISOString().split('T')[0] %>">Hari Berikutnya ➡</a>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('dropdownToggle');
+      const dropdown = document.getElementById('dropdown');
+  
+      toggleBtn.addEventListener('click', () => {
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        } else {
+          dropdown.style.display = 'block';
+        }
+      });
+    });
+  </script>
+  
+
+</body>
+</html>
